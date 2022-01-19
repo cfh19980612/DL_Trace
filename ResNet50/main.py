@@ -11,9 +11,14 @@ import torchvision.transforms as transforms
 import os
 import argparse
 
+import time
+
 from models import *
 from utils import progress_bar
 
+import wandb
+
+wandb.init(project="Trace", entity="fahao")
 
 parser = argparse.ArgumentParser(description='PyTorch CIFAR10 Training')
 parser.add_argument('--lr', default=0.1, type=float, help='learning rate')
@@ -97,6 +102,7 @@ def train(epoch):
     correct = 0
     total = 0
     for batch_idx, (inputs, targets) in enumerate(trainloader):
+        batch_time_start = time.time()
         inputs, targets = inputs.to(device), targets.to(device)
         optimizer.zero_grad()
         outputs = net(inputs)
@@ -108,9 +114,10 @@ def train(epoch):
         _, predicted = outputs.max(1)
         total += targets.size(0)
         correct += predicted.eq(targets).sum().item()
-
-        progress_bar(batch_idx, len(trainloader), 'Loss: %.3f | Acc: %.3f%% (%d/%d)'
-                     % (train_loss/(batch_idx+1), 100.*correct/total, correct, total))
+        
+        batch_time_end = time.time()
+        progress_bar(batch_idx, len(trainloader), 'Loss: %.3f | Acc: %.3f%% (%d/%d) | Time: %.3f'
+                     % (train_loss/(batch_idx+1), 100.*correct/total, correct, total, batch_time_end - batch_time_start))
 
 
 def test(epoch):
