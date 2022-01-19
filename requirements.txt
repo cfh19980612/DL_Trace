@@ -1,0 +1,18 @@
+certifi==2021.10.8
+charset-normalizer==2.0.10
+colorama @ file:///home/conda/feedstock_root/build_artifacts/colorama_1602866480661/work
+dataclasses @ file:///home/conda/feedstock_root/build_artifacts/dataclasses_1628958435052/work
+decorator==4.4.2
+dgl==0.7.2
+idna==3.3
+networkx @ file:///home/conda/feedstock_root/build_artifacts/networkx_1617499744980/work
+numpy @ file:///home/conda/feedstock_root/build_artifacts/numpy_1626681920064/work
+olefile @ file:///home/conda/feedstock_root/build_artifacts/olefile_1602866521163/work
+Pillow @ file:///home/conda/feedstock_root/build_artifacts/pillow_1602493095698/work
+requests==2.27.1
+scipy==1.5.4
+torch==1.10.1
+torchaudio==0.10.1
+torchvision==0.11.2
+tqdm==4.62.1
+urllib3==1.26.8
