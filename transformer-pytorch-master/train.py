@@ -10,6 +10,9 @@ from dataset import problem
 from utils.optimizer import LRScheduler
 from utils import utils
 
+import warnings
+warnings.filterwarnings('ignore)
+
 
 def summarize_train(writer, global_step, last_time, model, opt,
                     inputs, targets, optimizer, loss, pred, ans):
@@ -61,7 +64,7 @@ def train(train_data, model, opt, global_step, optimizer, t_vocab_size,
         inputs = None
         if opt.has_inputs:
             inputs = batch.src
-
+        batch_time_start = time.time()
         targets = batch.trg
         pred = model(inputs, targets)
 
@@ -78,8 +81,9 @@ def train(train_data, model, opt, global_step, optimizer, t_vocab_size,
             summarize_train(writer, global_step, last_time, model, opt,
                             inputs, targets, optimizer, loss, pred, ans)
             last_time = time.time()
+        batch_time_end = time.time()
 
-        pbar.set_description('[Loss: {:.4f}]'.format(loss.item()))
+        pbar.set_description('[Loss: {:.4f} | Time: {:.4f}]'.format(loss.item(), batch_time_end - batch_time_start))
 
         global_step += 1
         pbar.update(targets.size(0))
