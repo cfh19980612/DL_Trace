@@ -13,6 +13,10 @@ from utils import utils
 import warnings
 warnings.filterwarnings('ignore')
 
+import wandb
+
+wandb.init(project="Trace", entity="fahao")
+
 
 def summarize_train(writer, global_step, last_time, model, opt,
                     inputs, targets, optimizer, loss, pred, ans):
