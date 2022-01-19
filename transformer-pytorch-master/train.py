@@ -11,7 +11,7 @@ from utils.optimizer import LRScheduler
 from utils import utils
 
 import warnings
-warnings.filterwarnings('ignore)
+warnings.filterwarnings('ignore')
 
 
 def summarize_train(writer, global_step, last_time, model, opt,
