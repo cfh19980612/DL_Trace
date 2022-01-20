@@ -129,6 +129,14 @@ def train(rank, args, run):
             loss.backward()
             optimizer.step()
 
+            if rank == 1:
+                for i in range(3):
+                    optimizer.zero_grad()
+                    outputs = net(inputs)
+                    loss = criterion(outputs, targets)
+                    loss.backward()
+                    # optimizer.step()
+
             train_loss += loss.item()
             _, predicted = outputs.max(1)
             total += targets.size(0)
@@ -136,7 +144,7 @@ def train(rank, args, run):
             if rank == 0:
                 progress_bar(batch_idx, len(trainloader), 'Loss: %.3f | Acc: %.3f%% (%d/%d)'
                             % (train_loss/(batch_idx+1), 100.*correct/total, correct, total))
-                sleep(1.5)
+                # sleep(1.5)
         # if rank == 0:
         #     global best_acc
         #     net.eval()
