@@ -52,7 +52,7 @@ def main():
                         metavar='N',
                         help='number of total epochs to run')
     parser.add_argument('--lr', default=0.1, type=float, help='learning rate')
-    parser.add_argument('--world_size', default=1, type=float, help='world size')
+    parser.add_argument('--world_size', default=1, type=int, help='world size')
     args = parser.parse_args()
 
     #########################################################
