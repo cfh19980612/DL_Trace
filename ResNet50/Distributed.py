@@ -1,4 +1,5 @@
 '''Distributed train CIFAR10 with PyTorch.'''
+from time import sleep
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -100,7 +101,7 @@ def train(rank, args, run):
             'dog', 'frog', 'horse', 'ship', 'truck')
 
     # load model to device
-    net = ResNet50()
+    net = ResNet152()
     net = net.cuda()
     device = torch.device("cuda", rank)
     nn.parallel.DistributedDataParallel(net, device_ids=[rank])
@@ -131,6 +132,8 @@ def train(rank, args, run):
             _, predicted = outputs.max(1)
             total += targets.size(0)
             correct += predicted.eq(targets).sum().item()
+            if rank == 1:
+                sleep(5)
             if rank == 0:
                 progress_bar(batch_idx, len(trainloader), 'Loss: %.3f | Acc: %.3f%% (%d/%d)'
                             % (train_loss/(batch_idx+1), 100.*correct/total, correct, total))
