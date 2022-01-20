@@ -57,18 +57,20 @@ def main():
     args = parser.parse_args()
 
     #########################################################
-    run = wandb.init(
-        entity="fahao",
-        project="Trace",
-        name="Distributed-ResNet50",
-        group="DDP",  # all runs for the experiment in one group
-    )
+    # run = wandb.init(
+    #     entity="fahao",
+    #     project="Trace",
+    #     name="Distributed-ResNet50",
+    #     group="DDP",  # all runs for the experiment in one group
+    # )
+    run = None
     mp.spawn(train, nprocs=args.world_size, args=(args,run,))
     # mp.spawn(train, args=(args, ), nprocs=args.world_size, join=True)
     #########################################################
 
 def train(rank, args, run):
     # CPU or GPU?
+    print('Rank: ',rank)
     device='cpu'
     use_cuda = torch.cuda.is_available()
     if use_cuda:
@@ -90,12 +92,12 @@ def train(rank, args, run):
     # training and test sets
     if rank == 0:
         trainloader = torch.utils.data.DataLoader(
-            trainset, batch_size=32, shuffle=True, num_workers=2)
+            trainset, batch_size=32, shuffle=True, num_workers=0)
         testloader = torch.utils.data.DataLoader(
-            testset, batch_size=100, shuffle=False, num_workers=2)
+            testset, batch_size=100, shuffle=False, num_workers=0)
     else:
         trainloader = torch.utils.data.DataLoader(
-            trainset, batch_size=32, shuffle=True, num_workers=2)
+            trainset, batch_size=32, shuffle=True, num_workers=0)
 
     classes = ('plane', 'car', 'bird', 'cat', 'deer',
             'dog', 'frog', 'horse', 'ship', 'truck')
@@ -112,7 +114,7 @@ def train(rank, args, run):
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.SGD(net.parameters(), lr=args.lr,
                         momentum=0.9, weight_decay=5e-4)
-    scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=200)
+    # scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=200)
 
     # Train
     for epoch in range (args.epochs):
@@ -138,26 +140,6 @@ def train(rank, args, run):
                 progress_bar(batch_idx, len(trainloader), 'Loss: %.3f | Acc: %.3f%% (%d/%d)'
                             % (train_loss/(batch_idx+1), 100.*correct/total, correct, total))
                 # sleep(0.5)
-        # if rank == 0:
-        #     global best_acc
-        #     net.eval()
-        #     test_loss = 0
-        #     correct = 0
-        #     total = 0
-        #     with torch.no_grad():
-        #         for batch_idx, (inputs, targets) in enumerate(testloader):
-        #             inputs, targets = inputs.to(device), targets.to(device)
-        #             outputs = net(inputs)
-        #             loss = criterion(outputs, targets)
-
-        #             test_loss += loss.item()
-        #             _, predicted = outputs.max(1)
-        #             total += targets.size(0)
-        #             correct += predicted.eq(targets).sum().item()
-
-        #             progress_bar(batch_idx, len(testloader), 'Loss: %.3f | Acc: %.3f%% (%d/%d)'
-        #                         % (test_loss/(batch_idx+1), 100.*correct/total, correct, total))
-
 
 if __name__ == "__main__":
     main()
