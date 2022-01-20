@@ -122,20 +122,31 @@ def train(rank, args, run):
         total = 0
         for batch_idx, (inputs, targets) in enumerate(trainloader):
             inputs, targets = inputs.to(device), targets.to(device)
-            optimizer.zero_grad()
-            outputs = net(inputs)
-            loss = criterion(outputs, targets)
+            # optimizer.zero_grad()
+            # outputs = net(inputs)
+            # loss = criterion(outputs, targets)
 
-            loss.backward()
-            optimizer.step()
+            # loss.backward()
+            # optimizer.step()
 
             if rank == 1:
-                for i in range(3):
+                for i in range(10):
                     optimizer.zero_grad()
                     outputs = net(inputs)
                     loss = criterion(outputs, targets)
-                    loss.backward()
+                    # loss.backward()
                     # optimizer.step()
+                optimizer.zero_grad()
+                outputs = net(inputs)
+                loss = criterion(outputs, targets)
+                loss.backward()
+                optimizer.step()
+            elif rank == 0:
+                optimizer.zero_grad()
+                outputs = net(inputs)
+                loss = criterion(outputs, targets)
+                loss.backward()
+                optimizer.step()
 
             train_loss += loss.item()
             _, predicted = outputs.max(1)
