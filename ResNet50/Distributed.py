@@ -62,7 +62,7 @@ def main():
         name="Distributed-ResNet50",
         group="DDP",  # all runs for the experiment in one group
     )
-    mp.spawn(train, nprocs=world_size, args=(args,run,))
+    mp.spawn(train, nprocs=args.world_size, args=(args,run,))
     # mp.spawn(train, args=(args, ), nprocs=args.world_size, join=True)
     #########################################################
 
