@@ -95,7 +95,7 @@ def train(rank, args, run):
             testset, batch_size=100, shuffle=False, num_workers=2)
     else:
         trainloader = torch.utils.data.DataLoader(
-            trainset, batch_size=128, shuffle=True, num_workers=2)
+            trainset, batch_size=256, shuffle=True, num_workers=2)
 
     classes = ('plane', 'car', 'bird', 'cat', 'deer',
             'dog', 'frog', 'horse', 'ship', 'truck')
@@ -133,8 +133,6 @@ def train(rank, args, run):
             _, predicted = outputs.max(1)
             total += targets.size(0)
             correct += predicted.eq(targets).sum().item()
-            if rank == 1:
-                sleep(5)
             if rank == 0:
                 progress_bar(batch_idx, len(trainloader), 'Loss: %.3f | Acc: %.3f%% (%d/%d)'
                             % (train_loss/(batch_idx+1), 100.*correct/total, correct, total))
