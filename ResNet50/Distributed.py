@@ -90,18 +90,18 @@ def train(rank, args, run):
     # training and test sets
     if rank == 0:
         trainloader = torch.utils.data.DataLoader(
-            trainset, batch_size=128, shuffle=True, num_workers=2)
+            trainset, batch_size=32, shuffle=True, num_workers=2)
         testloader = torch.utils.data.DataLoader(
             testset, batch_size=100, shuffle=False, num_workers=2)
     else:
         trainloader = torch.utils.data.DataLoader(
-            trainset, batch_size=256, shuffle=True, num_workers=2)
+            trainset, batch_size=32, shuffle=True, num_workers=2)
 
     classes = ('plane', 'car', 'bird', 'cat', 'deer',
             'dog', 'frog', 'horse', 'ship', 'truck')
 
     # load model to device
-    net = ResNet152()
+    net = ResNet50()
     net = net.cuda()
     device = torch.device("cuda", rank)
     nn.parallel.DistributedDataParallel(net, device_ids=[rank])
@@ -137,7 +137,7 @@ def train(rank, args, run):
             if rank == 0:
                 progress_bar(batch_idx, len(trainloader), 'Loss: %.3f | Acc: %.3f%% (%d/%d)'
                             % (train_loss/(batch_idx+1), 100.*correct/total, correct, total))
-                sleep(0.5)
+                # sleep(0.5)
         # if rank == 0:
         #     global best_acc
         #     net.eval()
