@@ -45,7 +45,7 @@ world_size = 1                #
 DIST_DEFAULT_ADDR = 'localhost'
 DIST_DEFAULT_PORT = '12345'
 method = f'tcp://{DIST_DEFAULT_ADDR}:{DIST_DEFAULT_PORT}'
-backend = 'nccl'
+backend = 'gloo'
 
 def main():
     parser = argparse.ArgumentParser()
@@ -126,12 +126,8 @@ def train(rank, args, run):
             outputs = net(inputs)
             loss = criterion(outputs, targets)
 
-            if rank == 1 and batch_idx % 5 == 0:
-                loss.backward()
-                optimizer.step()
-            elif rank == 0:
-                loss.backward()
-                optimizer.step()
+            loss.backward()
+            optimizer.step()
 
             train_loss += loss.item()
             _, predicted = outputs.max(1)
