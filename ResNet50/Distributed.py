@@ -18,6 +18,8 @@ import torch.multiprocessing as mp
 import torch.distributed as dist
 from torch.utils.data.distributed import DistributedSampler
 
+import wandb
+wandb.init(project="Trace", entity="fahao", name='Distributed-ResNet50')
 
 # Data
 print('==> Preparing data..')
