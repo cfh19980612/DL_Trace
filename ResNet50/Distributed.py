@@ -90,12 +90,12 @@ def train(rank, args, run):
     # training and test sets
     if rank == 0:
         trainloader = torch.utils.data.DataLoader(
-            trainset, batch_size=64, shuffle=True, num_workers=2)
+            trainset, batch_size=128, shuffle=True, num_workers=2)
         testloader = torch.utils.data.DataLoader(
             testset, batch_size=100, shuffle=False, num_workers=2)
     else:
         trainloader = torch.utils.data.DataLoader(
-            trainset, batch_size=512, shuffle=True, num_workers=2)
+            trainset, batch_size=128, shuffle=True, num_workers=2)
 
     classes = ('plane', 'car', 'bird', 'cat', 'deer',
             'dog', 'frog', 'horse', 'ship', 'truck')
@@ -125,8 +125,13 @@ def train(rank, args, run):
             optimizer.zero_grad()
             outputs = net(inputs)
             loss = criterion(outputs, targets)
-            loss.backward()
-            optimizer.step()
+
+            if rank == 1 and batch_idx % 5 == 0:
+                loss.backward()
+                optimizer.step()
+            elif rank == 0:
+                loss.backward()
+                optimizer.step()
 
             train_loss += loss.item()
             _, predicted = outputs.max(1)
