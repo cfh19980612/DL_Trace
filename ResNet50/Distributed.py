@@ -57,13 +57,13 @@ def main():
     args = parser.parse_args()
 
     #########################################################
-    # run = wandb.init(
-    #     entity="fahao",
-    #     project="Trace",
-    #     name="Distributed-ResNet50",
-    #     group="DDP",  # all runs for the experiment in one group
-    # )
-    run = None
+    run = wandb.init(
+        entity="fahao",
+        project="Trace",
+        name="Distributed-ResNet50",
+        group="DDP",  # all runs for the experiment in one group
+    )
+    # run = None
     mp.spawn(train, nprocs=args.world_size, args=(args,run,))
     # mp.spawn(train, args=(args, ), nprocs=args.world_size, join=True)
     #########################################################
