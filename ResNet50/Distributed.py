@@ -19,7 +19,7 @@ import torch.distributed as dist
 from torch.utils.data.distributed import DistributedSampler
 
 import wandb
-wandb.init(project="Trace", entity="fahao", name='Distributed-ResNet50')
+
 
 # Data
 print('==> Preparing data..')
@@ -40,7 +40,7 @@ testset = torchvision.datasets.CIFAR10(
     root='./data', train=False, download=True, transform=transform_test)
 
 # group settings
-# world_size = 1                #
+world_size = 1                #
 DIST_DEFAULT_ADDR = 'localhost'
 DIST_DEFAULT_PORT = '12345'
 method = f'tcp://{DIST_DEFAULT_ADDR}:{DIST_DEFAULT_PORT}'
@@ -56,10 +56,17 @@ def main():
     args = parser.parse_args()
 
     #########################################################
-    mp.spawn(train, args=(args, ), nprocs=args.world_size, join=True)
+    run = wandb.init(
+        entity="fahao",
+        project="Trace",
+        name="Distributed-ResNet50",
+        group="DDP",  # all runs for the experiment in one group
+    )
+    mp.spawn(train, nprocs=world_size, args=(args,run,))
+    # mp.spawn(train, args=(args, ), nprocs=args.world_size, join=True)
     #########################################################
 
-def train(rank, args):
+def train(rank, args, run):
     # CPU or GPU?
     device='cpu'
     use_cuda = torch.cuda.is_available()
@@ -67,11 +74,15 @@ def train(rank, args):
         device='cuda'
         print ("use CUDA:", use_cuda, "- device:", device)
 
+    # if rank == 0:
+    #     wandb.init(project="Trace", entity="fahao", name="Distributed-ResNet50")
+
     # init group
     dist.init_process_group(backend=backend,
                                 init_method=method,
                                 world_size=args.world_size,
-                                rank=rank)
+                                rank=rank,
+                                group_name="DDP")
     if device == 'cuda':
         torch.cuda.set_device(rank)
 
