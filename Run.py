@@ -4,6 +4,7 @@ import wandb
 wandb.init(project="Switching", entity="fahao", name="ResNet-Transformer")
 
 # Task 1
+for i in range (100):
 print(os.system("cd GraphSAGE; python main.py --num-epochs=1"))
 print(os.system("cd ResNet50; python main.py"))
 
