@@ -24,7 +24,7 @@ from utils import progress_bar
 
 import wandb
 
-# wandb.init(project="Switching", entity="fahao", name="ResNet-Transformer")
+wandb.init(project="Switching", entity="fahao", name="ResNet-Transformer")
 
 def compute_acc(pred, labels):
     """
@@ -144,6 +144,7 @@ def run(args, device, data):
     avg = 0
     iter_tput = []
     for epoch in range(args.num_epochs):
+        iteration_time_start = time.time()
         # graphSAGE training
         # Loop over the dataloader to sample the computation dependency graph as a list of
         # blocks.
@@ -204,13 +205,14 @@ def run(args, device, data):
                 torch.cuda.empty_cache()
                 break
             # print('Avg epoch time: {}'.format(avg / (epoch - 4)))
-
+        iteration_time_end = time.time()
+        print('Iteration {:05d} | Time {:.4f}'.format(epoch, iteration_time_end - iteration_time_start))
 if __name__ == '__main__':
     argparser = argparse.ArgumentParser()
     argparser.add_argument('--gpu', type=int, default=0,
                            help="GPU device ID. Use -1 for CPU training")
     argparser.add_argument('--dataset', type=str, default='reddit')
-    argparser.add_argument('--num-epochs', type=int, default=20)
+    argparser.add_argument('--num-epochs', type=int, default=100)
     argparser.add_argument('--num-hidden', type=int, default=16)
     argparser.add_argument('--num-layers', type=int, default=2)
     argparser.add_argument('--fan-out', type=str, default='10,25')
